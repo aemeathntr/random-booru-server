@@ -19,7 +19,8 @@ const ALLOWED_TAGS = new Set([
   "although_she_hurriedly_put_on_clothes_(meme)",
   "blue_archive",
   "mushoku_tensei",
-  "eris_greyrat"
+  "eris_greyrat",
+  "ai-generated"
 ]);
 
 async function fetchJson(url) {
