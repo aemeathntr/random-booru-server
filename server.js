@@ -4,7 +4,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(express.static("public"));
 
-const TAGS = new Set(["ntr", "netorare", "cheating", "cuckolding"]);
+const TAGS = new Set(["ntr", "netorare", "netorare mating_pess", "netorare azur_lane"]);
 const SOURCES = new Set(["danbooru", "gelbooru", "rule34"]);
 
 async function fetchJson(url) {
