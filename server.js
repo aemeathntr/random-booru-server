@@ -25,7 +25,7 @@ function asArray(data) {
 
 async function fromDanbooru(tag) {
   const url = new URL("https://danbooru.donmai.us/posts.json");
-  url.searchParams.set("tags", `${tag} rating:g`);
+  url.searchParams.set("tags", `${tag} rating:e`);
   url.searchParams.set("limit", "100");
   const posts = await fetchJson(url);
   return posts.map(p => ({
@@ -40,7 +40,7 @@ async function fromGelbooru(tag) {
   const url = new URL("https://gelbooru.com/index.php");
   for (const [k, v] of Object.entries({
     page: "dapi", s: "post", q: "index", json: "1",
-    limit: "100", tags: `${tag} rating:safe`
+    limit: "100", tags: `${tag} rating:explicit`
   })) url.searchParams.set(k, v);
   const posts = asArray(await fetchJson(url));
   return posts.map(p => ({
@@ -55,7 +55,7 @@ async function fromRule34(tag) {
   const url = new URL("https://api.rule34.xxx/index.php");
   for (const [k, v] of Object.entries({
     page: "dapi", s: "post", q: "index", json: "1",
-    limit: "100", tags: `${tag} rating:safe`
+    limit: "100", tags: `${tag} rating:explicit`
   })) url.searchParams.set(k, v);
   const posts = asArray(await fetchJson(url));
   return posts.map(p => ({
