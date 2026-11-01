@@ -5,31 +5,46 @@
 <title>Random Danbooru — Imágenes y vídeos</title>
 <style>
 :root{color-scheme:dark;--bg:#10131b;--muted:#aab3c5;--accent:#9b8cff}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#252344,var(--bg) 55%);font:16px system-ui,sans-serif;color:#f5f6fb;min-height:100vh;display:grid;place-items:center;padding:22px}
-main{width:min(920px,100%);text-align:center}h1{font-size:clamp(1.8rem,5vw,2.7rem)}p{color:var(--muted);line-height:1.5}
-.panel{background:#1b2130df;border:1px solid #ffffff18;border-radius:22px;padding:20px;box-shadow:0 20px 60px #0007}
-.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:18px 0}
-button,select{font:inherit;border:0;border-radius:12px;padding:13px 18px;background:#2b3347;color:white}
-button{background:var(--accent);color:#151326;font-weight:750;cursor:pointer}button:disabled{opacity:.55}
-select{border:1px solid #ffffff22;max-width:100%}#status{min-height:26px;color:#d6d2ff}
-figure{margin:12px auto 0;min-height:200px;display:grid;place-items:center}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#252344,var(--bg) 55%);font:16px system-ui,sans-serif;color:#f5f6fb;min-height:100vh;display:grid;place-items:center;padding:18px}
+main{width:min(960px,100%);text-align:center}h1{font-size:clamp(1.8rem,5vw,2.7rem)}p{color:var(--muted);line-height:1.5}
+.panel{background:#1b2130df;border:1px solid #ffffff18;border-radius:22px;padding:18px;box-shadow:0 20px 60px #0007}
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:16px 0}
+button{font:inherit;border:0;border-radius:12px;padding:12px 17px;background:#2b3347;color:white;cursor:pointer}
+button.primary{background:var(--accent);color:#151326;font-weight:750}
+button:disabled{opacity:.55}
+.tag-area{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin:14px 0}
+.tag{display:inline-flex;align-items:center;gap:7px;background:#2b3347;border:1px solid #ffffff20;border-radius:999px;padding:8px 12px;font-size:.91rem;cursor:pointer;user-select:none}
+.tag input{accent-color:var(--accent);width:16px;height:16px}
+.tag:has(input:checked){background:#4b426f;border-color:#a99bff}
+#selected{color:#c8c0ff;font-size:.9rem;min-height:24px}
+#status{min-height:26px;color:#d6d2ff}
+figure{margin:12px auto 0;min-height:180px;display:grid;place-items:center}
 img,video{max-width:100%;max-height:68vh;object-fit:contain;border-radius:14px;background:#0d1018}
-video{width:100%;}#placeholder{color:#8993a8;padding:60px 10px}.meta{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px;color:var(--muted);font-size:.9rem}
-a{color:#c4bcff}small{display:block;color:#8791a5;margin-top:18px}
+video{width:100%}#placeholder{color:#8993a8;padding:55px 10px}
+.meta{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px;color:var(--muted);font-size:.9rem}
+a{color:#c4bcff}small{display:block;color:#8791a5;margin-top:18px;line-height:1.45}
 </style></head><body><main>
-<h1>🎲 Random Danbooru</h1><p>Imágenes y vídeos aleatorios de Danbooru en cada pulsación.</p>
-<section class="panel"><div class="controls">
-<button id="next">✨ Siguiente imagen o vídeo</button>
-<select id="tag" aria-label="Etiqueta">
-<option value="random">Etiqueta aleatoria</option>
-<option value="netorare">netorare</option>
-<option value="cheating">cheating</option>
-<option value="cuckolding">cuckolding</option>
-<option value="ntr">ntr</option>
-<option value="netorare azur_lane">netorare + azur_lane</option>
-<option value="netorare mating_press">netorare + mating_press</option>
-<option value="netorare impregnation">netorare + impregnation</option>
-</select></div>
+<h1>🎲 Random Danbooru</h1><p>Elige una o varias etiquetas. Puedes combinarlas o desmarcarlas cuando quieras.</p>
+<section class="panel">
+<div class="controls">
+<button class="primary" id="next">✨ Buscar imagen o vídeo</button>
+<button id="clear">Quitar todas</button>
+</div>
+<div class="tag-area" id="tagArea">
+<label class="tag"><input type="checkbox" value="ntr"> ntr</label>
+<label class="tag"><input type="checkbox" value="netorare"> netorare</label>
+<label class="tag"><input type="checkbox" value="cheating"> cheating</label>
+<label class="tag"><input type="checkbox" value="cuckolding"> cuckolding</label>
+<label class="tag"><input type="checkbox" value="azur_lane"> azur_lane</label>
+<label class="tag"><input type="checkbox" value="mating_press"> mating_press</label>
+<label class="tag"><input type="checkbox" value="impregnation"> impregnation</label>
+<label class="tag"><input type="checkbox" value="interspecies"> interspecies</label>
+<label class="tag"><input type="checkbox" value="genshin_impact"> genshin_impact</label>
+<label class="tag"><input type="checkbox" value="zenless_zone_zero"> zenless_zone_zero</label>
+<label class="tag"><input type="checkbox" value="although_she_hurriedly_put_on_clothes_(meme)"> although_she_hurriedly_put_on_clothes_(meme)</label>
+<label class="tag"><input type="checkbox" value="blue_archive"> blue_archive</label>
+</div>
+<div id="selected">Sin etiquetas: búsqueda aleatoria general.</div>
 <div id="status" role="status">Pulsa el botón para empezar.</div>
 <figure>
 <div id="placeholder">Tu imagen o vídeo aparecerá aquí.</div>
@@ -39,42 +54,52 @@ a{color:#c4bcff}small{display:block;color:#8791a5;margin-top:18px}
 <div class="meta"><span id="origin"></span><span id="tags"></span></div>
 <p><a id="postLink" target="_blank" rel="noopener noreferrer" hidden>Ver publicación original ↗</a></p>
 </section>
-<small>Fuente única: Danbooru. Se solicitan publicaciones con clasificación General (rating:g). Los vídeos compatibles (MP4 y WebM) se reproducen con controles. La clasificación depende de las etiquetas asignadas por el sitio y puede contener errores.</small>
+<small>Fuente: Danbooru. Se aplica el filtro rating:g (General). Las etiquetas seleccionadas se combinan en una misma búsqueda; si quitas una, deja de aplicarse. Los vídeos compatibles (MP4 y WebM) aparecen con controles de reproducción. Las etiquetas y la clasificación dependen de los datos de Danbooru.</small>
 </main>
 <script>
-const TAGS=["netorare","cheating","cuckolding","ntr","netorare azur_lane","netorare mating_press","netorare impregnation"];
-const $=id=>document.getElementById(id),pick=a=>a[Math.floor(Math.random()*a.length)];
+const $=id=>document.getElementById(id);
 let previous="";
+function selectedTags(){return [...document.querySelectorAll('#tagArea input:checked')].map(x=>x.value);}
+function updateSelected(){
+ const tags=selectedTags();
+ $("selected").textContent=tags.length?"Etiquetas activas: "+tags.join(" + "):"Sin etiquetas: búsqueda aleatoria general.";
+}
 function hideMedia(){
  const img=$("art"),video=$("clip");
  img.hidden=true;img.removeAttribute("src");
  video.pause();video.hidden=true;video.removeAttribute("src");video.load();
 }
-async function nextImage(){
+async function nextMedia(){
  const btn=$("next");btn.disabled=true;$("status").textContent="Buscando en Danbooru…";
  $("postLink").hidden=true;$("origin").textContent="";$("tags").textContent="";
- hideMedia();$("placeholder").hidden=false;
+ hideMedia();$("placeholder").hidden=false;$("placeholder").textContent="Buscando…";
  try{
-  const tag=$("tag").value==="random"?pick(TAGS):$("tag").value;
-  const response=await fetch(`/api/random?tag=${encodeURIComponent(tag)}`);
+  const tags=selectedTags();
+  const params=new URLSearchParams();
+  if(tags.length)params.set("tags",tags.join(","));
+  const response=await fetch("/api/random?"+params.toString());
   const data=await response.json();
   if(!response.ok)throw new Error(data.error||"No se pudo obtener un archivo.");
   const repeated=data.id===previous;previous=data.id;
   $("placeholder").hidden=true;
   if(data.mediaType==="video"){
    const video=$("clip");video.hidden=false;video.src=data.media;video.load();
-   $("status").textContent=repeated?"El vídeo se repitió; pulsa otra vez.":"¡Vídeo encontrado! Pulsa reproducir.";
+   $("status").textContent=repeated?"El vídeo se repitió; prueba otra vez.":"¡Vídeo encontrado! Pulsa reproducir.";
   }else{
-   const img=$("art");img.onload=()=>{img.hidden=false;};
+   const img=$("art");
+   img.onload=()=>{img.hidden=false;};
    img.onerror=()=>{$("status").textContent="No se pudo cargar la imagen. Prueba otra vez.";};
    img.src=data.media;
-   $("status").textContent=repeated?"La publicación se repitió; pulsa otra vez.":"¡Imagen encontrada!";
+   $("status").textContent=repeated?"La publicación se repitió; prueba otra vez.":"¡Imagen encontrada!";
   }
   $("origin").textContent="Fuente: Danbooru";
-  $("tags").textContent="Búsqueda: "+data.searchedTag;
+  $("tags").textContent="Búsqueda: "+(tags.length?tags.join(" + "):"sin etiquetas");
   $("postLink").href=data.post;$("postLink").hidden=false;
- }catch(e){$("status").textContent="Error: "+e.message;$("placeholder").hidden=false;$("placeholder").textContent="No se pudo obtener el archivo.";}
+ }catch(e){$("status").textContent="Error: "+e.message;$("placeholder").hidden=false;$("placeholder").textContent="No se encontró un resultado. Prueba quitando alguna etiqueta.";}
  finally{btn.disabled=false;}
 }
-$("next").addEventListener("click",nextImage);
+$("tagArea").addEventListener("change",updateSelected);
+$("next").addEventListener("click",nextMedia);
+$("clear").addEventListener("click",()=>{document.querySelectorAll('#tagArea input').forEach(x=>x.checked=false);updateSelected();});
+updateSelected();
 </script></body></html>
