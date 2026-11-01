@@ -18,7 +18,7 @@ const ALLOWED_TAGS = new Set([
   "zenless_zone_zero",
   "although_she_hurriedly_put_on_clothes_(meme)",
   "blue_archive",
-  "mushoku_tenshei"
+  "mushoku_tensei"
 ]);
 
 async function fetchJson(url) {
