@@ -17,7 +17,8 @@ const ALLOWED_TAGS = new Set([
   "genshin_impact",
   "zenless_zone_zero",
   "although_she_hurriedly_put_on_clothes_(meme)",
-  "blue_archive"
+  "blue_archive",
+  "mushoku_tenshei"
 ]);
 
 async function fetchJson(url) {
