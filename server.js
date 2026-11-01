@@ -4,7 +4,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(express.static("public"));
 
-// Danbooru solamente. Las búsquedas se combinan con rating:g.
+// Danbooru solamente. Las búsquedas se combinan con rating:e.
 const TAGS = new Set([
   "ntr",
   "netorare",
@@ -32,7 +32,7 @@ app.get("/api/random", async (req, res) => {
 
   try {
     const url = new URL("https://danbooru.donmai.us/posts.json");
-    url.searchParams.set("tags", `${tag} rating:g`);
+    url.searchParams.set("tags", `${tag} rating:e`);
     url.searchParams.set("limit", "100");
 
     const posts = await fetchJson(url);
