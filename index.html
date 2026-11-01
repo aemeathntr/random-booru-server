@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Random Booru — SFW</title>
+<style>
+:root{color-scheme:dark;--bg:#10131b;--muted:#aab3c5;--accent:#9b8cff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#252344,var(--bg) 55%);font:16px system-ui,sans-serif;color:#f5f6fb;min-height:100vh;display:grid;place-items:center;padding:22px}
+main{width:min(920px,100%);text-align:center}h1{font-size:clamp(1.8rem,5vw,2.7rem)}p{color:var(--muted);line-height:1.5}
+.panel{background:#1b2130df;border:1px solid #ffffff18;border-radius:22px;padding:20px;box-shadow:0 20px 60px #0007}
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:18px 0}
+button,select{font:inherit;border:0;border-radius:12px;padding:13px 18px;background:#2b3347;color:white}
+button{background:var(--accent);color:#151326;font-weight:750;cursor:pointer}button:disabled{opacity:.55}
+select{border:1px solid #ffffff22}#status{min-height:26px;color:#d6d2ff}
+figure{margin:12px auto 0;min-height:200px;display:grid;place-items:center}
+img{max-width:100%;max-height:68vh;object-fit:contain;border-radius:14px;background:#0d1018}
+#placeholder{color:#8993a8;padding:60px 10px}.meta{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px;color:var(--muted);font-size:.9rem}
+a{color:#c4bcff}small{display:block;color:#8791a5;margin-top:18px}
+</style></head><body><main>
+<h1>🎲 Random Booru</h1><p>Una imagen aleatoria por pulsación.</p>
+<section class="panel">
+<div class="controls">
+<button id="next">✨ Siguiente imagen</button>
+<select id="source" aria-label="Fuente"><option value="all">Todas las fuentes</option><option value="danbooru">Danbooru</option><option value="gelbooru">Gelbooru</option><option value="rule34">Rule34</option></select>
+<select id="tag" aria-label="Etiqueta"><option value="random">Etiqueta aleatoria</option><option value="netorare">netorare</option><option value="cheating">cheating</option><option value="cuckolding">cuckolding</option><option value="ntr">ntr</option></select>
+</div>
+<div id="status" role="status">Pulsa el botón para empezar.</div>
+<figure><div id="placeholder">Tu imagen aparecerá aquí.</div><img id="art" alt="Imagen aleatoria" hidden></figure>
+<div class="meta"><span id="origin"></span><span id="tags"></span></div>
+<p><a id="postLink" target="_blank" rel="noopener noreferrer" hidden>Ver publicación original ↗</a></p>
+</section>
+<small>Esta edición usa filtros de clasificación general/segura. Las etiquetas y clasificaciones dependen de cada sitio y pueden contener errores.</small>
+</main>
+<script>
+const TAGS=["netorare","cheating","cuckolding","ntr"];
+const $=id=>document.getElementById(id);
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+let previous="";
+async function nextImage(){
+ const btn=$("next");btn.disabled=true;$("status").textContent="Buscando…";
+ $("postLink").hidden=true;$("origin").textContent="";$("tags").textContent="";
+ try{
+  const tag=$("tag").value==="random"?pick(TAGS):$("tag").value;
+  const source=$("source").value;
+  const url=`/api/random?tag=${encodeURIComponent(tag)}&source=${encodeURIComponent(source)}`;
+  const response=await fetch(url);
+  const data=await response.json();
+  if(!response.ok)throw new Error(data.error+(data.details?" — "+data.details.join("; "):""));
+  if(data.id===previous) $("status").textContent="La publicación se repitió; pulsa otra vez.";
+  previous=data.id;
+  const img=$("art");img.onload=()=>{$("placeholder").hidden=true;img.hidden=false;};
+  img.onerror=()=>{$("status").textContent="No se pudo cargar el archivo de imagen. Prueba otra vez.";};
+  img.src=data.image;
+  $("origin").textContent="Fuente: "+data.source;
+  $("tags").textContent="Etiqueta: "+data.searchedTag;
+  $("postLink").href=data.post;$("postLink").hidden=false;
+  if(data.id!==previous)$("status").textContent="¡Imagen encontrada!";
+  else $("status").textContent="¡Imagen encontrada!";
+ }catch(e){$("status").textContent="Error: "+e.message;$("placeholder").hidden=false;$("placeholder").textContent="No se pudo obtener una imagen.";$("art").hidden=true;}
+ finally{btn.disabled=false;}
+}
+$("next").addEventListener("click",nextImage);
+</script></body></html>
