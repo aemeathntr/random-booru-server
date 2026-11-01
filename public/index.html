@@ -5,10 +5,7 @@
 <title>Random Danbooru — Imágenes y vídeos</title>
 <style>
 :root{color-scheme:dark;--bg:#10131b;--muted:#aab3c5;--accent:#9b8cff}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#252344,var(--bg) 55%);font:16px system-ui,sans-serif;color:#f5f6fb;min-height:100vh;display:grid;place-items:center;padding:18px;position:relative;isolation:isolate}
-body::before{content:"";position:fixed;inset:0;z-index:-1;background-image:var(--page-wallpaper,none);background-position:center;background-size:cover;background-repeat:no-repeat;opacity:.38;transition:opacity .25s}
-body.has-wallpaper::after{content:"";position:fixed;inset:0;z-index:-1;background:#080a12a8}
-
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#252344,var(--bg) 55%);font:16px system-ui,sans-serif;color:#f5f6fb;min-height:100vh;display:grid;place-items:center;padding:18px}
 main{width:min(960px,100%);text-align:center}h1{font-size:clamp(1.8rem,5vw,2.7rem)}p{color:var(--muted);line-height:1.5}
 .panel{background:#1b2130df;border:1px solid #ffffff18;border-radius:22px;padding:18px;box-shadow:0 20px 60px #0007}
 .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:16px 0}
@@ -31,14 +28,7 @@ a{color:#c4bcff}small{display:block;color:#8791a5;margin-top:18px;line-height:1.
 <section class="panel">
 <div class="controls">
 <button class="primary" id="next">✨ Buscar imagen o vídeo</button>
-<button id="setWallpaper" disabled>🖼️ Usar imagen como fondo</button>
-<button id="clearWallpaper" hidden>Quitar fondo</button>
 <button id="clear">Quitar todas</button>
-<select id="mediaType" aria-label="Tipo de contenido">
-<option value="any">Imágenes y vídeos</option>
-<option value="image">Solo imágenes</option>
-<option value="video">Solo vídeos</option>
-</select>
 </div>
 <div class="tag-area" id="tagArea">
 <label class="tag"><input type="checkbox" value="ntr"> ntr</label>
@@ -64,23 +54,11 @@ a{color:#c4bcff}small{display:block;color:#8791a5;margin-top:18px;line-height:1.
 <div class="meta"><span id="origin"></span><span id="tags"></span></div>
 <p><a id="postLink" target="_blank" rel="noopener noreferrer" hidden>Ver publicación original ↗</a></p>
 </section>
-<small>Fuente: Danbooru. Se aplica el filtro rating:g (General). Puedes elegir imágenes y vídeos, solo imágenes o solo vídeos. Cuando se muestre una imagen, pulsa «Usar imagen como fondo» para colocarla detrás de la página; puedes quitarla con «Quitar fondo». Las etiquetas seleccionadas se combinan en una misma búsqueda AND.</small>
+<small>Fuente: Danbooru. Se aplica el filtro rating:g (General). Las etiquetas seleccionadas se combinan en una misma búsqueda; si quitas una, deja de aplicarse. Los vídeos compatibles (MP4 y WebM) aparecen con controles de reproducción. Las etiquetas y la clasificación dependen de los datos de Danbooru.</small>
 </main>
 <script>
 const $=id=>document.getElementById(id);
 let previous="";
-let currentImageUrl="";
-function setWallpaper(url){
- if(!url)return;
- document.body.style.setProperty("--page-wallpaper", `url("${url.replace(/["\\\\]/g, "\\\\$&")}")`);
- document.body.classList.add("has-wallpaper");
- $("clearWallpaper").hidden=false;
-}
-function clearWallpaper(){
- document.body.style.removeProperty("--page-wallpaper");
- document.body.classList.remove("has-wallpaper");
- $("clearWallpaper").hidden=true;
-}
 function selectedTags(){return [...document.querySelectorAll('#tagArea input:checked')].map(x=>x.value);}
 function updateSelected(){
  const tags=selectedTags();
@@ -90,8 +68,6 @@ function hideMedia(){
  const img=$("art"),video=$("clip");
  img.hidden=true;img.removeAttribute("src");
  video.pause();video.hidden=true;video.removeAttribute("src");video.load();
- currentImageUrl="";
- $("setWallpaper").disabled=true;
 }
 async function nextMedia(){
  const btn=$("next");btn.disabled=true;$("status").textContent="Buscando en Danbooru…";
@@ -101,7 +77,6 @@ async function nextMedia(){
   const tags=selectedTags();
   const params=new URLSearchParams();
   if(tags.length)params.set("tags",tags.join(","));
-  params.set("media", $("mediaType").value);
   const response=await fetch("/api/random?"+params.toString());
   const data=await response.json();
   if(!response.ok)throw new Error(data.error||"No se pudo obtener un archivo.");
@@ -112,8 +87,6 @@ async function nextMedia(){
    $("status").textContent=repeated?"El vídeo se repitió; prueba otra vez.":"¡Vídeo encontrado! Pulsa reproducir.";
   }else{
    const img=$("art");
-   currentImageUrl=data.media;
-   $("setWallpaper").disabled=false;
    img.onload=()=>{img.hidden=false;};
    img.onerror=()=>{$("status").textContent="No se pudo cargar la imagen. Prueba otra vez.";};
    img.src=data.media;
@@ -127,8 +100,6 @@ async function nextMedia(){
 }
 $("tagArea").addEventListener("change",updateSelected);
 $("next").addEventListener("click",nextMedia);
-$("setWallpaper").addEventListener("click",()=>setWallpaper(currentImageUrl));
-$("clearWallpaper").addEventListener("click",clearWallpaper);
 $("clear").addEventListener("click",()=>{document.querySelectorAll('#tagArea input').forEach(x=>x.checked=false);updateSelected();});
 updateSelected();
 </script></body></html>
