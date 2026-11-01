@@ -4,15 +4,20 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(express.static("public"));
 
-// Danbooru solamente. Las búsquedas se combinan con rating:e.
-const TAGS = new Set([
+// Etiquetas individuales permitidas. Se pueden combinar en una búsqueda.
+const ALLOWED_TAGS = new Set([
   "ntr",
   "netorare",
   "cheating",
   "cuckolding",
-  "netorare azur_lane",
-  "netorare mating_press",
-  "netorare impregnation"
+  "azur_lane",
+  "mating_press",
+  "impregnation",
+  "interspecies",
+  "genshin_impact",
+  "zenless_zone_zero",
+  "although_she_hurriedly_put_on_clothes_(meme)",
+  "blue_archive"
 ]);
 
 async function fetchJson(url) {
@@ -25,14 +30,17 @@ async function fetchJson(url) {
 }
 
 app.get("/api/random", async (req, res) => {
-  const tag = String(req.query.tag || "").toLowerCase().trim();
-  if (!TAGS.has(tag)) {
-    return res.status(400).json({ error: "Etiqueta no permitida." });
+  const rawTags = String(req.query.tags || "").split(",").map(t => t.trim()).filter(Boolean);
+  const uniqueTags = [...new Set(rawTags)];
+
+  if (uniqueTags.some(tag => !ALLOWED_TAGS.has(tag))) {
+    return res.status(400).json({ error: "Una o más etiquetas no están permitidas." });
   }
 
   try {
+    const searchTags = [...uniqueTags, "rating:e"].join(" ");
     const url = new URL("https://danbooru.donmai.us/posts.json");
-    url.searchParams.set("tags", `${tag} rating:e`);
+    url.searchParams.set("tags", searchTags);
     url.searchParams.set("limit", "100");
 
     const posts = await fetchJson(url);
@@ -43,19 +51,18 @@ app.get("/api/random", async (req, res) => {
       return {
         media: file,
         mediaType: isVideo ? "video" : "image",
-        mimeType: isVideo ? (ext === "webm" ? "video/webm" : "video/mp4") : "",
         post: `https://danbooru.donmai.us/posts/${p.id}`,
-        tags: p.tag_string || "",
+        searchedTags: uniqueTags,
         id: `danbooru-${p.id}`
       };
-    }).filter(p => p.media && (!p.mediaType || p.mediaType === "image" || p.mediaType === "video"));
+    }).filter(p => p.media);
 
     if (!results.length) {
-      return res.status(404).json({ error: "Danbooru no encontró archivos para esa combinación." });
+      return res.status(404).json({ error: "Danbooru no encontró archivos con esa combinación de etiquetas." });
     }
 
     const post = results[Math.floor(Math.random() * results.length)];
-    return res.json({ ...post, source: "danbooru", searchedTag: tag });
+    return res.json({ ...post, source: "danbooru" });
   } catch (error) {
     return res.status(502).json({ error: `No se pudo consultar Danbooru: ${error.message}` });
   }
